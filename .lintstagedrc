@@ -1,5 +1,8 @@
 {
-    "*.php": {
-        "vendor/bin/php-cs-fixer fix --rules=@PSR2,-psr0"
-    }
+    "linters": {
+        "**/*.php": [
+            "vendor/bin/php-cs-fixer --verbose fix --config .php_cs --rules=@PSR2,-psr0"
+        ]
+    },
+    "concurrent": true
 }
