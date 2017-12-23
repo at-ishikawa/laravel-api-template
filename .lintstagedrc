@@ -1,7 +1,8 @@
 {
     "linters": {
         "**/*.php": [
-            "vendor/bin/php-cs-fixer --verbose fix --config .php_cs --rules=@PSR2,-psr0"
+            "php -l",
+            "vendor/bin/php-cs-fixer --verbose fix --config .php_cs"
         ],
         "tests/**/*.php": [
             "vendor/bin/phpunit --verbose"
