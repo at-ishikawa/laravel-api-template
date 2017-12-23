@@ -1,0 +1,115 @@
+version: 2
+
+anchors:
+  default_job: &default_job
+    working_directory: ~/repo
+    docker:
+      - image: "circleci/php:7.1-apache-node-browsers"
+      - image: "mysql:8.0"
+        ports:
+          - "3306:3306"
+        environment:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+
+  commands: &setup
+    run:
+      name: setup before
+      command: |
+        sudo apt update && sudo apt install zlib1g-dev libsqlite3-dev
+        sudo docker-php-ext-install zip pdo pdo_mysql
+        sudo composer self-update
+
+  restore_node_cache: &restore_node_cache
+    restore_cache:
+      keys:
+        - node-v1-{{ checksum "package.json" }}
+        - node-v1-
+  setup_node: &setup_node
+    run:
+      name: setup node
+      command: npm install
+  save_node_cache: &save_node_cache
+    save_cache:
+      key: node-v1-{{ checksum "package.json" }}
+      paths:
+        - node_modules
+
+  restore_composer_cache: &restore_composer_cache
+    restore_cache:
+      key: composer-v1-{{ checksum "composer.lock" }}
+  setup_composer: &setup_composer
+    run:
+      name: setup
+      command: |
+        composer install --prefer-dist
+  save_composer_cache: &save_composer_cache
+    save_cache:
+      key: composer-v1-{{ checksum "composer.lock" }}
+      paths:
+        - vendor
+
+jobs:
+  build:
+    <<: *default_job
+    steps:
+      - checkout
+      - *setup
+      - *restore_composer_cache
+      - *setup_composer
+      - *save_composer_cache
+      - *restore_node_cache
+      - *setup_node
+      - *save_node_cache
+  lint:
+    <<: *default_job
+    steps:
+      - checkout
+      - *setup
+      - *restore_composer_cache
+      - *setup_composer
+      - *save_composer_cache
+      - *restore_node_cache
+      - *setup_node
+      - *save_node_cache
+      - run:
+          name: lint
+          command: composer run lint
+  test:
+    <<: *default_job
+    steps:
+      - checkout
+      - *setup
+      - *restore_composer_cache
+      - *setup_composer
+      - *save_composer_cache
+      - *restore_node_cache
+      - *setup_node
+      - *save_node_cache
+      - run:
+          name: Wait for db
+          command: dockerize -wait tcp://$HOST:$PORT -timeout 1m
+          environment:
+            HOST: localhost
+            PORT: 3306
+      - run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan -vvv migrate --env=testing
+      - run:
+          name: test
+          command: "composer run test"
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - build
+      - lint:
+          requires:
+            - build
+      - test:
+          requires:
+            - build

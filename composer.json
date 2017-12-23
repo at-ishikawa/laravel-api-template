@@ -43,6 +43,12 @@
             "composer install",
             "npm install"
         ],
+        "lint": [
+            "vendor/bin/php-cs-fixer --verbose fix --config .php_cs app tests"
+        ],
+        "test": [
+            "vendor/bin/phpunit tests"
+        ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
