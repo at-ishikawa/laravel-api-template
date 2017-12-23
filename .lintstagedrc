@@ -2,6 +2,9 @@
     "linters": {
         "**/*.php": [
             "vendor/bin/php-cs-fixer --verbose fix --config .php_cs --rules=@PSR2,-psr0"
+        ],
+        "tests/**/*.php": [
+            "vendor/bin/phpunit --verbose"
         ]
     },
     "concurrent": true
