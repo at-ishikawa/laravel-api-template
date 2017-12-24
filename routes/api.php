@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Routing\Router;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,5 +14,9 @@ use Illuminate\Http\Request;
 |
 */
 
-// Route::middleware('auth:api')->post('/user', 'UserCreateController@handle');
-Route::post('/user', 'UserCreateController@handle');
+Route::post('/users', 'UserCreateController@handle');
+Route::group([
+    'middleware' => 'auth:api',
+], function (Router $router) {
+    $router->get('/users/show', 'UserShowController@handle');
+});
