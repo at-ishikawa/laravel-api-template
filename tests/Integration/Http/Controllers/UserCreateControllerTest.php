@@ -22,15 +22,13 @@ class UserCreateControllerTest extends TestCase
      */
     public function handle(): void
     {
-        $response = $this->postJson('/api/user', [
+        $response = $this->postJson('/users', [
             'name' => 'zzzxxxccc',
             'email' => 'test@example.com',
             'password' => 'password',
         ]);
-        $response->assertJson([
-            'name' => 'zzzxxxccc',
-            'email' => 'test@example.com',
-            'password' => 'password',
+        $response->assertJsonStructure([
+            'token',
         ]);
         $response->assertStatus(200);
     }

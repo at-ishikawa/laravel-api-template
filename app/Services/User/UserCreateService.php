@@ -2,9 +2,14 @@
 
 namespace App\Services\User;
 
+use App\DataStore\Database\User;
 use App\Domains\UserDomain;
 use App\Repositories\UserRepository;
 use App\Services\BaseService;
+use DB;
+use Exception;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Facades\Auth;
 
 class UserCreateService extends BaseService
 {
@@ -16,9 +21,24 @@ class UserCreateService extends BaseService
         $this->user_repository = $user_repository;
     }
 
-    public function create(array $parameters): void
+    /**
+     * @param array $parameters
+     * @return array
+     * @throws AuthenticationException
+     * @throws Exception
+     * @throws \Throwable
+     */
+    public function create(array $parameters): array
     {
         $domain = UserDomain::createFromArray($parameters);
-        $this->user_repository->create($domain);
+
+        return DB::transaction(function () use ($domain) {
+            $domain = $this->user_repository->create($domain);
+            $entity = new User($domain->toArray());
+            $token = Auth::guard()->fromUser($entity);
+            return [
+                'token' => $token,
+            ];
+        });
     }
 }

@@ -19,7 +19,7 @@ class UserCreateController extends Controller
     public function handle(Request $request, UserCreateService $service): JsonResponse
     {
         $input = RequestValidator::validate($request);
-        $service->create($input);
-        return DefaultJsonResponse::createResponse($input);
+        $response = $service->create($input);
+        return DefaultJsonResponse::createResponse($response);
     }
 }
