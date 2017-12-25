@@ -14,9 +14,9 @@ use Illuminate\Routing\Router;
 |
 */
 
-Route::post('/users', 'UserCreateController@handle');
+Route::post('/users', 'User\UserCreateController@handle');
 Route::group([
     'middleware' => 'auth:api',
 ], function (Router $router) {
-    $router->get('/users/show', 'UserShowController@handle');
+    $router->get('/users/show', 'User\UserShowController@handle');
 });

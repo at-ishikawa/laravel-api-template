@@ -20,6 +20,30 @@ class RequestValidatorTest extends TestCase
     }
 
     /**
+     * @test
+     * @dataProvider provideGetActionDataSet
+     */
+    public function getAction($action_route, $expected_rule): void
+    {
+        $actual = $this->sut->getAction($action_route);
+        $this->assertSame($expected_rule, $actual);
+    }
+
+    public function provideGetActionDataSet(): array
+    {
+        return [
+            'no namespace controller' => [
+                'App\Http\Controllers\UserController@handle',
+                'user',
+            ],
+            'namespace controller' => [
+                'App\Http\Controllers\User\CreateController@handle',
+                'user.create',
+            ],
+        ];
+    }
+
+    /**
      * @throws \Illuminate\Validation\ValidationException
      */
     public function testValidate(): void
