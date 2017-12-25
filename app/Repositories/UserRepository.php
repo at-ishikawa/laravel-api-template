@@ -11,17 +11,11 @@ class UserRepository extends BaseRepository
     /**
      * @param UserDomain $user
      * @return UserDomain
-     * @throws \Exception
-     * @throws \Throwable
      */
     public function create(UserDomain $user): UserDomain
     {
         $eloquent = new User($user->toArray());
         $eloquent->save();
-        return UserDomain::createFromArray(array_only($eloquent->toArray(), [
-            'id',
-            'name',
-            'email',
-        ]));
+        return UserDomain::createFromEloquent($eloquent);
     }
 }

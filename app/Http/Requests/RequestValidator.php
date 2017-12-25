@@ -37,12 +37,14 @@ class RequestValidator
         return array_only($inputs, array_keys($rules));
     }
 
-    private function getAction(): string
+    public function getAction(?string $action = null): string
     {
-        $action = Route::currentRouteAction();
+        if ($action === null) {
+            $action = Route::currentRouteAction();
+        }
         $controller_path = explode('@', $action)[0];
         $controller_route_path = explode('\\', preg_replace('/Controller$/', '', $controller_path), 4)[3];
-        $controller_snake_case_path = snake_case($controller_route_path);
+        $controller_snake_case_path = snake_case(str_replace('\\', '', $controller_route_path));
         return str_replace('_', '.', $controller_snake_case_path);
     }
 

@@ -18,15 +18,22 @@ trait ArrayCopyable
         }
     }
 
-    public static function createFromArray(array $fields): self
+    public static function createFromArray(array $fields, array $keys = []): self
     {
         $instance = new static();
+        if (!empty($keys)) {
+            $fields = array_only($fields, $keys);
+        }
         $instance->copyFromArray($fields);
         return $instance;
     }
 
-    public static function createFromEloquent(Model $model): self
+    public static function createFromEloquent(Model $model, array $fillable = []): self
     {
-        return static::createFromArray($model->toArray());
+        $keys = [];
+        if (empty($fillable)) {
+            $keys = $model->getFillable();
+        }
+        return static::createFromArray($model->toArray(), $keys);
     }
 }

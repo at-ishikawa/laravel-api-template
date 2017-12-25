@@ -2,12 +2,12 @@
 
 namespace Tests\Integration\Http\Controllers;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class UserCreateControllerTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseTransactions;
 
     /**
      * @before
