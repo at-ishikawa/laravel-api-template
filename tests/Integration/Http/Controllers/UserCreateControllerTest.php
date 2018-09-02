@@ -27,9 +27,9 @@ class UserCreateControllerTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password',
         ]);
+        $response->assertStatus(200);
         $response->assertJsonStructure([
             'token',
         ]);
-        $response->assertStatus(200);
-    }
+     }
 }
